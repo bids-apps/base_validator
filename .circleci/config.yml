@@ -22,10 +22,18 @@ jobs:
           paths:
             - ~/docker
 
+      - persist_to_workspace:
+             root: .
+             paths: ~/docker
+
+
   deploy:
     machine:
       image: circleci/classic:latest
     steps:
+      - attach_workspace:
+          at: ~/.
+
       - deploy:
           command: |
             if [[ -n "$DOCKER_PASS" ]]; then docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS && docker push bids/${CIRCLE_PROJECT_REPONAME}:latest; fi
