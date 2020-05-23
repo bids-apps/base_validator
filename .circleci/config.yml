@@ -1,0 +1,47 @@
+version: 2.1
+jobs:
+  build:
+    machine:
+      image: circleci/classic:latest
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+            - v_0_docker_cache
+
+      - run:
+          name: build docker image
+          command: |
+            if [[ -e ~/docker/image.tar ]]; then docker load -i ~/docker/image.tar; fi
+            docker build -t bids/${CIRCLE_PROJECT_REPONAME} .
+            mkdir -p ~/docker; docker save "bids/${CIRCLE_PROJECT_REPONAME}" > ~/docker/image.tar
+
+      - save_cache:
+          key: v_0_docker_cache
+          paths:
+            - ~/docker
+
+      - persist_to_workspace:
+             root: .
+             paths: ~/docker
+
+
+  deploy:
+    machine:
+      image: circleci/classic:latest
+    steps:
+      - attach_workspace:
+          at: ~/.
+
+      - deploy:
+          command: |
+            if [[ -n "$DOCKER_PASS" ]]; then docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS && docker push bids/${CIRCLE_PROJECT_REPONAME}:latest; fi
+            if [[ -n "$DOCKER_PASS" ]]; then docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS && docker tag bids/${CIRCLE_PROJECT_REPONAME} bids/${CIRCLE_PROJECT_REPONAME}:$CIRCLE_TAG && docker push bids/${CIRCLE_PROJECT_REPONAME}:$CIRCLE_TAG; fi
+
+workflows:
+  version: 2.1
+  build_deploy:
+    jobs:
+      - build
+      - deploy
