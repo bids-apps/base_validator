@@ -5,31 +5,19 @@ jobs:
       image: circleci/classic:latest
     steps:
       - checkout
-
-      - restore_cache:
-          keys:
-            - v_0_docker_cache
-
       - run:
           name: build docker image
           command: |
             if [[ -e ~/docker/image.tar ]]; then
               docker load -i ~/docker/image.tar;
             fi
-            docker build -t bids/${CIRCLE_PROJECT_REPONAME} .
+            docker build -t bids/${CIRCLE_PROJECT_REPONAME}:latest .
             mkdir -p ~/docker
-            docker save "bids/${CIRCLE_PROJECT_REPONAME}" > ~/docker/image.tar
-
-      - save_cache:
-          key: v_0_docker_cache
-          paths:
-            - ~/docker
-
+            docker save "bids/${CIRCLE_PROJECT_REPONAME}:latest" > ~/docker/image.tar
       - persist_to_workspace:
-             root: /home/circleci
-             paths:
-               - docker/image.tar
-
+          root: /home/circleci
+          paths:
+            - docker/image.tar
 
   deploy:
     docker:
@@ -54,5 +42,13 @@ workflows:
   version: 2.1
   build_deploy:
     jobs:
-      - build
-      - deploy
+      - build:
+          filters:
+            tags:
+              only: /.*/
+      - deploy:
+          requires:
+            - build
+          filters:
+            tags:
+              only: /.*/
