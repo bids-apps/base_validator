@@ -13,17 +13,17 @@ jobs:
       - run:
           name: build docker image
           command: |
-            if [[ -e ~/docker/image.tar ]]; then docker load -i ~/docker/image.tar; fi
+            if [[ -e ./docker/image.tar ]]; then docker load -i ./docker/image.tar; fi
             docker build -t bids/${CIRCLE_PROJECT_REPONAME} .
-            mkdir -p ~/docker; docker save "bids/${CIRCLE_PROJECT_REPONAME}" > ~/docker/image.tar
+            mkdir -p ./docker; docker save "bids/${CIRCLE_PROJECT_REPONAME}" > ./docker/image.tar
 
       - save_cache:
           key: v_0_docker_cache
           paths:
-            - ~/docker
+            - ./docker
 
       - persist_to_workspace:
-             root: ~
+             root: .
              paths: ./docker
 
 
@@ -32,7 +32,7 @@ jobs:
       image: circleci/classic:latest
     steps:
       - attach_workspace:
-          at: ~/.
+          at: .
 
       - run:
           command: |
