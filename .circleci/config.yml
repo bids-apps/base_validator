@@ -23,8 +23,8 @@ jobs:
             - ~/docker
 
       - persist_to_workspace:
-             root: .
-             paths: ~/docker
+             root: ~
+             paths: ./docker
 
 
   deploy:
