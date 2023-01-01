@@ -24,7 +24,7 @@ jobs:
     #docker:
       #- image: circleci/buildpack-deps:stretch
     machine:
-      image: circleci/classic:latest
+      image: ubuntu-2204:2022.10.2
     steps:
       - attach_workspace:
           at: /tmp/workspace
@@ -42,7 +42,6 @@ jobs:
             fi
 
 workflows:
-  version: 2.1
   build_deploy:
     jobs:
       - build:
