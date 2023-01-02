@@ -21,15 +21,13 @@ jobs:
             - docker/image.tar
 
   deploy:
-    #docker:
-      #- image: circleci/buildpack-deps:stretch
     machine:
       image: ubuntu-2204:2022.10.2
     steps:
       - attach_workspace:
           at: /tmp/workspace
-      #- setup_remote_docker
       - run: docker load -i /tmp/workspace/docker/image.tar
+      # DOCKER_PASS and DOCKER_USER are defined as CircleCI env variables (check circleci project in web form)
       - run:
           command: |
             if [[ -n "$DOCKER_PASS" ]]; then
@@ -46,13 +44,12 @@ workflows:
     jobs:
       - build:
           filters:
-            tags:
-              only: /.*/
+            branches:
+              only: master
       - deploy:
           requires:
             - build
           filters:
-            tags:
-              only: /.*/
+            branches:
+              only: master
 
-# VS Code Extension Version: 1.5.1
