@@ -34,4 +34,4 @@ repos:
 
 
 ci:
-  skip: [hadolint]
+  skip: [hadolint-docker]
