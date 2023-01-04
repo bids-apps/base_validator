@@ -26,6 +26,7 @@ jobs:
     - run: docker load -i /tmp/workspace/docker/image.tar
       # DOCKER_PASS and DOCKER_USER are defined as CircleCI env variables (check circleci project in web form)
     - run:
+        name: push to dockerhub        
         command: |
           wget https://raw.githubusercontent.com/bids-apps/maintenance-tools/main/circleci/push_docker.sh
           bash push_docker.sh  
