@@ -10,12 +10,8 @@ jobs:
     - run:
         name: build docker image
         command: |
-          if [[ -e ~/docker/image.tar ]]; then
-            docker load -i ~/docker/image.tar;
-          fi
-          docker build -t bids/${CIRCLE_PROJECT_REPONAME}:latest .
-          mkdir -p ~/docker
-          docker save "bids/${CIRCLE_PROJECT_REPONAME}:latest" > ~/docker/image.tar
+          wget https://raw.githubusercontent.com/bids-apps/maintenance-tools/main/circleci/build_docker.sh
+          bash build_docker.sh   
     - persist_to_workspace:
         root: /home/circleci
         paths:
@@ -31,14 +27,8 @@ jobs:
       # DOCKER_PASS and DOCKER_USER are defined as CircleCI env variables (check circleci project in web form)
     - run:
         command: |
-          if [[ -n "$DOCKER_PASS" ]]; then
-            echo "${DOCKER_PASS}" | docker login -u ${DOCKER_USER} --password-stdin && \
-            docker push bids/${CIRCLE_PROJECT_REPONAME}:latest
-            if [[ -n "${CIRCLE_TAG}" ]]; then
-              docker tag bids/${CIRCLE_PROJECT_REPONAME} bids/${CIRCLE_PROJECT_REPONAME}:$CIRCLE_TAG
-              docker push bids/${CIRCLE_PROJECT_REPONAME}:$CIRCLE_TAG;
-            fi
-          fi
+          wget https://raw.githubusercontent.com/bids-apps/maintenance-tools/main/circleci/push_docker.sh
+          bash push_docker.sh  
 
 workflows:
   build_deploy:
@@ -53,3 +43,5 @@ workflows:
         filters:
           branches:
             only: master
+
+# VS Code Extension Version: 1.5.1
