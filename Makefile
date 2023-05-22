@@ -8,5 +8,5 @@ Dockerfile:
 			--install "ca-certificates curl apt-utils" \
 			--run "curl -sL https://deb.nodesource.com/setup_18.x | bash -" \
 			--install "nodejs" \
-			--run "node --version && npm --version && npm install -g bids-validator@1.9.9" \
+			--run "node --version && npm --version && npm install -g bids-validator@1.11.0" \
 		> Dockerfile
