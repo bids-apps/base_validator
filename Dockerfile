@@ -3,13 +3,15 @@
 FROM ubuntu:jammy-20221130
 RUN apt-get update -qq \
            && apt-get install -y -q --no-install-recommends \
-                  ca-certificates curl apt-utils \
+                  ca-certificates curl apt-utils gnupg \
            && rm -rf /var/lib/apt/lists/*
-RUN curl -sL https://deb.nodesource.com/setup_18.x | bash -
+RUN mkdir -p /etc/apt/keyrings
+RUN curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
+ENV NODE_MAJOR 18
+RUN echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list
 RUN apt-get update -qq \
-           && apt-get install -y -q --no-install-recommends \
-                  nodejs \
-           && rm -rf /var/lib/apt/lists/*
+	&& apt-get install nodejs -y -q --no-install-recommends \
+	&& rm -rf /var/lib/apt/lists/*
 RUN node --version && npm --version && npm install -g bids-validator@1.9.9
 
 # Save specification to JSON.
