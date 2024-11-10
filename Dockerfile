@@ -7,4 +7,3 @@ RUN curl -fsSL https://deno.land/install.sh | sh && \
     export DENO_INSTALL="/root/.deno" && \
     export PATH="$DENO_INSTALL/bin:$PATH" && \
     deno install -Agf -n bids-validator jsr:@bids/validator@1.15.0
-
